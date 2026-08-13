@@ -167,6 +167,20 @@ export function validateBrandContent(
 
   for (const key of STRING_ARRAY_FIELDS) validateStringArray(brand, key, errors);
 
+  if (hasText(brand.parent_company) && hasText(brand.name)
+    && normalizedTextFingerprint(brand.parent_company) === normalizedTextFingerprint(brand.name)) {
+    errors.push('parent_company cannot be the manufacturer itself; omit it when the brand is independent');
+  }
+
+  if (Array.isArray(brand.common_ecu_manufacturers) && hasText(brand.name)) {
+    const brandFingerprint = normalizedTextFingerprint(brand.name);
+    for (const supplier of brand.common_ecu_manufacturers) {
+      if (normalizedTextFingerprint(supplier) === brandFingerprint) {
+        errors.push(`common_ecu_manufacturers cannot list the vehicle manufacturer itself ("${supplier}")`);
+      }
+    }
+  }
+
   if (Array.isArray(brand.related_brands)) {
     for (const slug of brand.related_brands) {
       if (!/^[a-z0-9]+(?:-[a-z0-9]+)*$/.test(String(slug))) {

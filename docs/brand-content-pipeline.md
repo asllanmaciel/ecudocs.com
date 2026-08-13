@@ -14,7 +14,7 @@ npm run validate:brands
 npm run build
 ```
 
-The AI variables below are required only for a non-dry-run generation. They are not required to build the site or to validate brand data.
+The AI endpoint is contacted only for a non-dry-run generation. It is not required to build the site or validate brand data.
 
 The implementation is deliberately incremental: existing URLs and legacy data remain valid while richer manufacturer content can be added without creating new Astro pages.
 
@@ -28,7 +28,7 @@ The implementation is deliberately incremental: existing URLs and legacy data re
 - separate AI-generated candidates from reviewed production data;
 - require provenance for technical claims whenever possible;
 - omit uncertain ECU details instead of guessing;
-- keep generation provider-neutral by targeting an OpenAI-compatible `chat/completions` API.
+- extend the project's existing `fetch-autoevolution.mjs` workflow and internal AI endpoint.
 
 ## Enriched brand shape
 
@@ -108,12 +108,11 @@ full validator + Astro build
 Copy/configure local environment variables without committing `.env`:
 
 ```bash
-AI_API_BASE_URL=https://provider.example/v1
-AI_API_KEY=...
-AI_MODEL=...
+AI_API_URL=https://ai.izdrail.com
+AI_MODEL=hf.co/laravelcompany/laravelseo:latest
 ```
 
-The generator uses the provider's OpenAI-compatible `/chat/completions` endpoint. Provider selection is infrastructure configuration; validation and production data do not depend on a vendor SDK.
+The generator extends the existing `scripts/fetch-autoevolution.mjs` workflow and calls its `/api/generate` endpoint. The values above are defaults and can be overridden for another compatible deployment.
 
 ### Preview generation without an API call
 
