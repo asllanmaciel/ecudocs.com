@@ -4,6 +4,18 @@ ECU Docs keeps `src/data/brands.json` as the legacy manufacturer index and suppo
 
 `src/data/<brand-slug>/brand.json`
 
+## Quick verification
+
+Use Node.js 20 or newer, install the locked dependencies, then run the two repository quality gates:
+
+```bash
+npm ci
+npm run validate:brands
+npm run build
+```
+
+The AI variables below are required only for a non-dry-run generation. They are not required to build the site or to validate brand data.
+
 The implementation is deliberately incremental: existing URLs and legacy data remain valid while richer manufacturer content can be added without creating new Astro pages.
 
 ## Design goals
@@ -140,6 +152,8 @@ After manually reviewing facts, technical claims and source URLs:
 ```bash
 npm run promote:brand -- --brand=bmw --apply
 ```
+
+The commands accept both `--brand=bmw` and `--brand bmw` forms, including when npm forwards options through `npm_config_*` on Windows.
 
 The promotion command validates both before and after writing. It does not bypass the full repository quality gates.
 

@@ -3,10 +3,31 @@ import * as path from 'node:path';
 import brandsData from '../src/data/brands.json' with { type: 'json' };
 import { slugifyBrand, validateBrandContent } from '../src/lib/brand-content.js';
 
+function parseBoolean(value) {
+  if (value == null) return false;
+  return ['1', 'true', 'yes', 'on'].includes(String(value).toLowerCase());
+}
+
+function readOption(args, name) {
+  const inline = args.find((arg) => arg.startsWith(`--${name}=`));
+  if (inline) return inline.slice(name.length + 3);
+
+  const index = args.indexOf(`--${name}`);
+  if (index >= 0 && args[index + 1] && !args[index + 1].startsWith('--')) {
+    return args[index + 1];
+  }
+
+  return process.env[`npm_config_${name.replace(/-/g, '_')}`] || null;
+}
+
+function hasFlag(args, name) {
+  return args.includes(`--${name}`)
+    || parseBoolean(process.env[`npm_config_${name.replace(/-/g, '_')}`]);
+}
+
 const args = process.argv.slice(2);
-const slugArg = args.find((arg) => arg.startsWith('--brand='));
-const apply = args.includes('--apply');
-const brandSlug = slugArg?.split('=')[1];
+const brandSlug = readOption(args, 'brand');
+const apply = hasFlag(args, 'apply');
 
 if (!brandSlug) {
   console.error('Usage: npm run promote:brand -- --brand=bmw [--apply]');
